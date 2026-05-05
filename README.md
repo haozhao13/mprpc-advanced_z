@@ -55,14 +55,14 @@
 ## 快速开始
 
 ### 1. 环境准备
-确保已安装 `protobuf-devel`, `zookeeper-c-client-devel`, `cmake`, `gcc-c++`。
+- 确保已安装 `protobuf-devel`, `zookeeper-c-client-devel`, `cmake`, `g++`。
 
 ### 2. 克隆项目
-执行：git clone https://github.com/haozhao13/mprpc-advanced_z.git
-拉取后执行：cd mprpc-advanced_z
+- 执行：git clone https://github.com/haozhao13/mprpc-advanced_z.git
+- 拉取后执行：cd mprpc-advanced_z
 
 ### 3. 编译项目
-执行自动化构建脚本：sudo ./original_autobuild.sh
+- 执行自动化构建脚本：sudo ./original_autobuild.sh
 
 
 ## 项目结构
