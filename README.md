@@ -66,19 +66,21 @@
 
 
 ## 项目结构
-mprpc/ \
-├── bin/                 # 可执行文件与配置\
-├── src/                 # 核心源码\
-│   ├── mprpcchannel.cc  # 客户端通道 (核心路由逻辑)\
-│   ├── rpcprovider.cc   # 服务端发布器\
-│   ├── tcpserver.cc     # Reactor 主从模型\
-│   ├── connpool.cc      # TCP 连接池\
-│   ├── zookeeperutil.cc # ZK 工具类\
-│   └── ...              \
-├── include/             # 头文件\
-├── test/                # 测试用例\
-├── stress_test/         # 压测脚本\
-└── CMakeLists.txt\
+- mprpc/ 
+- ├── bin/                                  # 可执行文件与配置
+- │       └── client.conf              # 压测专用配置文件，仅提供 ZK 地址
+- ├── src/                                  # 核心源码
+- │       ├── include/                  # 头文件
+- │       ├── mprpcchannel.cc    # 客户端通道 (核心路由逻辑)
+- │       ├── rpcprovider.cc        # 服务端发布器
+- │       ├── tcpserver.cc            # Reactor 主从模型
+- │       ├── connpool.cc            # TCP 连接池
+- │       ├── zookeeperutil.cc     # ZK 工具类
+- │       └── ... 
+- ├── stress_test/                       # 压测
+- │       ├── plot_load.py            # log数据可视化脚本
+- │       └── start_cluster.sh        # 构建**NODE_COUNT**个RpcProvider
+- └── CMakeLists.txt                  # cmake构建规则 
 
 
 # mprpc 框架压力测试执行手册
