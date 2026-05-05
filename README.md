@@ -66,21 +66,21 @@
 
 
 ## 项目结构
-mprpc-advanced_z/ 
-├── bin/                                  # 可执行文件与配置
-│   └── client.conf                       # 压测专用配置文件 (仅含 ZK 地址)
-├── src/                                  # 核心源码目录
-│   ├── include/                          # 头文件
-│   ├── mprpcchannel.cc                   # 客户端通道 (核心路由逻辑)
-│   ├── rpcprovider.cc                    # 服务端发布器
-│   ├── tcpserver.cc                      # Reactor 主从模型实现
-│   ├── connpool.cc                       # TCP 连接池
-│   ├── zookeeperutil.cc                  # ZooKeeper 工具类
-│   └── ...
-├── stress_test/                          # 压力测试模块
-│   ├── plot_load.py                      # 日志数据可视化脚本
-│   └── start_cluster.sh                  # 集群启动脚本 (构建 NODE_COUNT 个节点)
-└── CMakeLists.txt                        # CMake 构建规则
+- mprpc-advanced_z/ 
+- ├── bin/                                  # 可执行文件与配置
+- │   └── client.conf                       # 压测专用配置文件 (仅含 ZK 地址)
+- ├── src/                                  # 核心源码目录
+- │   ├── include/                          # 头文件
+- │   ├── mprpcchannel.cc                   # 客户端通道 (核心路由逻辑)
+- │   ├── rpcprovider.cc                    # 服务端发布器
+- │   ├── tcpserver.cc                      # Reactor 主从模型实现
+- │   ├── connpool.cc                       # TCP 连接池
+- │   ├── zookeeperutil.cc                  # ZooKeeper 工具类
+- │   └── ...
+- ├── stress_test/                          # 压力测试模块
+- │   ├── plot_load.py                      # 日志数据可视化脚本
+- │   └── start_cluster.sh                  # 集群启动脚本 (构建 NODE_COUNT 个节点)
+- └── CMakeLists.txt                        # CMake 构建规则
 
 
 # mprpc 框架压力测试执行手册
