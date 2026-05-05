@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package fixbug;
+
+// 开启生成 RPC 服务接口类
+option cc_generic_services = true; 
+
+// 响应状态码
+message ResultCode
+{
+    int32 errcode = 1;
+    bytes errmsg = 2;
+}
+
+// 登录请求
+message LoginRequest
+{
+    bytes name = 1;
+    bytes pwd = 2;
+}
+
+// 登录响应
+message LoginResponse
+{
+    ResultCode result = 1;
+    bool success = 2;
+}
+
+// 定义服务类及可供远程调用的方法
+service UserServiceRpc
+{
+    rpc Login(LoginRequest) returns(LoginResponse);
+}
