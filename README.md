@@ -57,41 +57,40 @@
 ### 1. 环境准备
 确保已安装 `protobuf-devel`, `zookeeper-c-client-devel`, `cmake`, `gcc-c++`。
 
-### 2. 编译项目
-# 克隆项目
-git clone https://github.com/yourname/mprpc.git
-cd mprpc
+### 2. 克隆项目
+执行：git clone https://github.com/haozhao13/mprpc-advanced_z.git
+拉取后执行：cd mprpc-advanced_z
 
-# 执行自动化构建脚本
-sudo ./original_autobuild.sh
+### 3. 编译项目
+执行自动化构建脚本：sudo ./original_autobuild.sh
 
 
 ## 项目结构
-mprpc/
-├── bin/                 # 可执行文件与配置
-├── src/                 # 核心源码
-│   ├── mprpcchannel.cc  # 客户端通道 (核心路由逻辑)
-│   ├── rpcprovider.cc   # 服务端发布器
-│   ├── tcpserver.cc     # Reactor 主从模型
-│   ├── connpool.cc      # TCP 连接池
-│   ├── zookeeperutil.cc # ZK 工具类
-│   └── ...              
-├── include/             # 头文件
-├── test/                # 测试用例
-├── stress_test/         # 压测脚本
-└── CMakeLists.txt
+mprpc/ \
+├── bin/                 # 可执行文件与配置\
+├── src/                 # 核心源码\
+│   ├── mprpcchannel.cc  # 客户端通道 (核心路由逻辑)\
+│   ├── rpcprovider.cc   # 服务端发布器\
+│   ├── tcpserver.cc     # Reactor 主从模型\
+│   ├── connpool.cc      # TCP 连接池\
+│   ├── zookeeperutil.cc # ZK 工具类\
+│   └── ...              \
+├── include/             # 头文件\
+├── test/                # 测试用例\
+├── stress_test/         # 压测脚本\
+└── CMakeLists.txt\
 
 
-## mprpc 框架压力测试执行手册
+# mprpc 框架压力测试执行手册
 
-### 1. 前置准备：编写测试逻辑
+## 1. 前置准备：编写测试逻辑
 在正式构建项目之前，需要先定义好客户端（Consumer）发送的具体请求逻辑。
 
 *   **操作文件**：`calluserservice.cc`
 *   **操作内容**：需要提前编写好该文件内的逻辑，核心是**循环开启指定次数的 RPC 请求**。
     *   *注：文档中示例为发起 500 次请求，循环调用 `Login` 方法。*
 
-### 2. 第一阶段：构建与编译
+## 2. 第一阶段：构建与编译
 确保代码就绪后，在项目根目录下执行构建脚本。
 
 *   **执行命令**：
@@ -102,7 +101,7 @@ mprpc/
     *   在 `bin/` 目录下生成可执行文件 `consumer`（客户端）和 `provider`（服务端）。
     *   在 `lib/` 目录下生成链接库 `libmprpc.so`。
 
-### 3. 第二阶段：启动 RPC 服务集群 (30 Nodes)
+## 3. 第二阶段：启动 RPC 服务集群 (30 Nodes)
 这是模拟生产环境的关键步骤，通过脚本自动部署 30 个服务节点。
 
 *   **进入目录**：
@@ -122,7 +121,7 @@ mprpc/
     *   此时，你应该能看到 **30 个临时节点（Ephemeral Nodes）** 成功注册到 Zookeeper 中。
     *   查看 `/bin/log/` 下的日志文件，确认出现 `ZK初始化成功` 和 `Znode创建成功` 的字样，表示所有节点已就绪，等待接收请求。
 
-### 4. 第三阶段：发起压测 (500 Requests)
+## 4. 第三阶段：发起压测 (500 Requests)
 集群就绪后，正式启动客户端发起请求。
 
 *   **操作步骤**：
@@ -141,7 +140,7 @@ mprpc/
 *   **预期流量**：
     *   客户端将发起 **500 次 RPC 请求**，这些请求将被打散并路由到刚才启动的 **30 个 RPC 服务节点**上。
 
-### 5. 第四阶段：结果分析与可视化
+## 5. 第四阶段：结果分析与可视化
 压测结束后，需要通过脚本分析日志，验证负载均衡的效果。
 
 *   **分析工具**：`plot_load.py` (Python 脚本)
@@ -158,7 +157,7 @@ mprpc/
 
 ---
 
-### 总结
+## 总结
 这套流程完美复现了 **500次请求 -> 30个节点** 的分布式场景。通过一致性哈希算法，mprpc 框架不仅实现了负载均衡，还保证了请求的“粘性”，这在需要本地缓存的业务场景中至关重要。祝你在渭南的开发工作顺利！
 
 
