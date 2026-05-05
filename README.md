@@ -19,6 +19,7 @@
 - **实时 Watcher 机制**：服务端节点变动时，Zookeeper 客户端能实时感知并更新本地路由缓存，无需重启服务。
 - **资源复用优化**：内置 TCP 连接池，支持长连接复用，减少握手开销；支持同步/异步调用模式。
 
+
 ## 技术栈
 
 - **核心语言**：C++ 11 (智能指针, Lambda, 线程库)
@@ -27,6 +28,7 @@
 - **服务发现**：Apache Zookeeper (C API)
 - **构建系统**：CMake
 - **设计模式**：Reactor, Singleton, Prototype, Factory
+
 
 ## 核心架构
 
@@ -49,19 +51,20 @@
 - **ZkClient**：封装 Zookeeper C API，实现节点创建、子节点监听 (Watcher)。
 - **动态路由**：监听 `/Service/Method` 路径下的子节点变化，自动更新一致性哈希环。
 
+
 ## 快速开始
 
 ### 1. 环境准备
 确保已安装 `protobuf-devel`, `zookeeper-c-client-devel`, `cmake`, `gcc-c++`。
 
 ### 2. 编译项目
-```bash
 # 克隆项目
 git clone https://github.com/yourname/mprpc.git
 cd mprpc
 
 # 执行自动化构建脚本
 sudo ./original_autobuild.sh
+
 
 ## 项目结构
 mprpc/
@@ -77,9 +80,6 @@ mprpc/
 ├── test/                # 测试用例
 ├── stress_test/         # 压测脚本
 └── CMakeLists.txt
----
-
-
 
 
 ## mprpc 框架压力测试执行手册
