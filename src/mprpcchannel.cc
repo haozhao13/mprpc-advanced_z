@@ -63,7 +63,8 @@ void ZkChildWatcher(zhandle_t *zh, int type, int state, const char *path, void *
     }
 }
 
-
+/* Stub在调用任何业务方法（如 Login）时，底层都会统一调用 channel_->CallMethod(...)
+因此负载均衡是在该程序（mprpcchannel.cc）中实现的，因为该程序仍属于“客户端的范畴”。 */
 void MprpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
                               google::protobuf::RpcController* controller,
                               const google::protobuf::Message* request,
