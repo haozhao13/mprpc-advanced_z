@@ -27,7 +27,6 @@
 - **网络库**：原生 Linux Socket + Epoll
 - **服务发现**：Apache Zookeeper (C API)
 - **构建系统**：CMake
-- **设计模式**：Reactor, Singleton, Prototype, Factory
 
 
 ## 核心架构
