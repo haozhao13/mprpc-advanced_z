@@ -12,6 +12,8 @@
 #include "mprpccontroller.h"
 #include <functional>
 
+#include "ThreadPool.h" // 引入线程池
+
 
 // --- 此处填补 MprpcClosure 的定义 ---
 class MprpcClosure : public google::protobuf::Closure {
@@ -23,12 +25,15 @@ private:
 };
 
 int main(int argc, char **argv) {
-    MprpcApplication::Init(argc, argv); // 初始化配置与日志[cite: 3]
+    MprpcApplication::Init(argc, argv); // 初始化配置与日志
+
+    // 初始化一个拥有 100 个工作线程的线程池
+    ThreadPool pool(100);
     
-    // 建议在外部创建一个 Stub 实例，其内部共享一个 MprpcChannel
+    // 应在外部创建一个 Stub 实例，其内部共享一个 MprpcChannel
     fixbug::UserServiceRpc_Stub stub(new MprpcChannel());
     
-    int total_requests = 500;
+    int total_requests = 1500;
     std::atomic<int> success_count{0};
     std::atomic<int> completed_count{0};
     std::mutex mtx;
@@ -37,40 +42,43 @@ int main(int argc, char **argv) {
     auto start_time = std::chrono::high_resolution_clock::now();
 
     for (int i = 0; i < total_requests; ++i) {
-        // 1. 为每次异步调用准备独立的上下文对象
-        auto* request = new fixbug::LoginRequest();
-        auto* response = new fixbug::LoginResponse();
-        auto* controller = new MprpcController();
+        // 将整个发起请求的过程打包成一个任务投递给线程池_【lambda表达式】
+        pool.enqueue([i, &stub, &success_count, &completed_count, &cv, total_requests]() {
+            // 1. 为每次异步调用准备独立的上下文对象
+            auto* request = new fixbug::LoginRequest();
+            auto* response = new fixbug::LoginResponse();
+            auto* controller = new MprpcController();
 
-        // 重要：设置变化的用户名，触发 ConsistentHash 的分流
-        request->set_name("user_" + std::to_string(i)); 
-        request->set_pwd("123456");
+            // 重要：设置变化的用户名，触发 ConsistentHash 的分流
+            request->set_name("user_" + std::to_string(i)); 
+            request->set_pwd("123456");
 
-        // 2. 构造回调逻辑
-        MprpcClosure* closure = new MprpcClosure([request, response, controller, &success_count, &completed_count, &cv, total_requests]() {
-            if (!controller->Failed() && response->result().errcode() == 0) {
-                success_count++;
-            }
-            
-            // 记录已完成的请求数
-            int current_completed = ++completed_count;
-            
-            // 资源清理
-            delete request;
-            delete response;
-            delete controller;
+            // 2. 构造回调逻辑_【lambda表达式】
+            MprpcClosure* closure = new MprpcClosure([request, response, controller, &success_count, &completed_count, &cv, total_requests]() {
+                if (!controller->Failed() && response->result().errcode() == 0) {
+                    success_count++;
+                }
+                // 记录已完成的请求数
+                int current_completed = ++completed_count;
+                // 资源清理
+                delete request;
+                delete response;
+                delete controller;
 
-            // 检查是否全部压测任务结束
-            if (current_completed == total_requests) {
-                cv.notify_one();
-            }
+                // 检查是否全部压测任务结束
+                if (current_completed == total_requests) {
+                    cv.notify_one();
+                }
+            });
+
+            // 此时调用 Login，它会在线程池的 Worker 线程中执行
+            // 3. 发起异步 RPC 调用
+            // 由于 done 不为空，CallMethod 内部会启动新线程执行任务
+            stub.Login(controller, request, response, closure);
         });
-
-        // 3. 发起异步 RPC 调用[cite: 1, 13]
-        // 由于 done 不为空，CallMethod 内部会启动新线程执行任务[cite: 4]
-        stub.Login(controller, request, response, closure);
     }
 
+    /* 剩下的逻辑与线程池无关了 */
     // 4. 等待所有并发请求返回
     std::unique_lock<std::mutex> lock(mtx);
     cv.wait(lock, [&]() { return completed_count == total_requests; });
