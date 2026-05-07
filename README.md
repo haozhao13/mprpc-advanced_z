@@ -1,4 +1,4 @@
-# mprpc: 一个轻量级、高性能的 C++ 分布式 RPC 框架
+# mprpc: 一个轻量级、⾼可⽤的分布式RPC框架
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 [![C++ Standard](https://img.shields.io/badge/C%2B%2B-11-blue.svg)]()
