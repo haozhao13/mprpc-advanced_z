@@ -1,19 +1,21 @@
-#ifndef THREAD_POOL_H
-#define THREAD_POOL_H
+#ifndef THREADPOOL_H
+#define THREADPOOL_H
 
+// 【一个通用的线程池】：基于 C++11 的半同步半异步线程池实现
 #include <vector>
 #include <queue>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
 #include <functional>
+#include <future>
 
 class ThreadPool {
 public:
     ThreadPool(size_t threads) : stop(false) {
         for(size_t i = 0; i < threads; ++i)
             workers.emplace_back([this] {
-                while(true) {
+                for(;;) {
                     std::function<void()> task;
                     {
                         std::unique_lock<std::mutex> lock(this->queue_mutex);
@@ -27,18 +29,25 @@ public:
             });
     }
 
-    ~ThreadPool() {
-        { std::unique_lock<std::mutex> lock(queue_mutex); stop = true; }
-        condition.notify_all();
-        for(std::thread &worker: workers) worker.join();
-    }
-
-    template<class F>
-    void enqueue(F&& f) {
-        { std::unique_lock<std::mutex> lock(queue_mutex); tasks.emplace(std::forward<F>(f)); }
+    template<class F, class... Args>
+    void enqueue(F&& f, Args&&... args) {
+        auto task = std::bind(std::forward<F>(f), std::forward<Args>(args)...);
+        {
+            std::unique_lock<std::mutex> lock(queue_mutex);
+            if(stop) throw std::runtime_error("enqueue on stopped ThreadPool");
+            tasks.emplace(task);
+        }
         condition.notify_one();
     }
 
+    ~ThreadPool() {
+        {
+            std::unique_lock<std::mutex> lock(queue_mutex);
+            stop = true;
+        }
+        condition.notify_all();
+        for(std::thread &worker: workers) worker.join();
+    }
 private:
     std::vector<std::thread> workers;
     std::queue<std::function<void()>> tasks;
@@ -46,4 +55,5 @@ private:
     std::condition_variable condition;
     bool stop;
 };
+
 #endif
