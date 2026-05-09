@@ -27,7 +27,7 @@
 - **网络库**：原生 Linux Socket + Epoll
 - **服务发现**：Apache Zookeeper (C API)
 - **构建系统**：CMake
-
+- **设计模式**：反应器模式 (Reactor)，代理模式 (Proxy)，单例模式 (Singleton)，观察者/发布-订阅模式 (Observer / Publish-Subscribe)
 
 ## 核心架构
 
@@ -45,6 +45,7 @@
 - **RpcProvider (Server)**：
     - **反序列化**：解析 Header 和参数。
     - **反射调用**：利用 Protobuf 反射机制动态调用业务方法。
+
 
 ### 3. 分布式协调层
 - **ZkClient**：封装 Zookeeper C API，实现节点创建、子节点监听 (Watcher)。
